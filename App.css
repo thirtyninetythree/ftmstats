@@ -1,0 +1,35 @@
+#txs {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+#txs td, #txs th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  #txs tr:nth-child(even){background-color: #ddd;}
+  
+  #txs tr:hover {background-color: #ddd;}
+  
+  #txs th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+  }
+
+  .button {
+    background-color: #04AA6D;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
