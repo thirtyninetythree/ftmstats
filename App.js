@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-const API_KEY = 'YNSPXNVMMYGY5URIB2I76YY5FQPCPWFJCN'
-const user_address = '0x8f147D02251FBF1E5912fC8b29F1E620fc9A5e1b'
+const API_KEY = ''
+const user_address = ''
 var url = `https://api.ftmscan.com/api?module=account&action=txlist&address=${user_address}&startblock=0&endblock=99999999&sort=asc&apikey=${API_KEY}`
 function App() {
   const [data, setData] = useState()
