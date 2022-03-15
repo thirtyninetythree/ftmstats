@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-
+import loadingGIF from './assets/loading-gif.gif'
 const API_KEY = ''
 
 function App() {
   const [data, setData] = useState()
   const [totalGasUsed, setTotalGasUsed] = useState(0)
+  const [totalNumberOfTransactions, setTotalNumberOfTransactions] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [showLoadingGIF, setShowLoadingGIF] = useState(false)
   const [txStatsList, setTxStatsList] = useState([])
   const [address, setAddress] = useState('')
 
@@ -28,20 +30,24 @@ function App() {
     var url = `https://api.ftmscan.com/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&sort=asc&apikey=${API_KEY}`
     var groupedTx = []
     let listOfTxStats = []
+    setShowLoadingGIF(true)
     fetch(url)
       .then((response) => response.json())
       .then((res) => {
+        
         setData(res['result'])
       })
       .then((_) => {
         groupedTx = window._.groupBy(data, 'to')
         var uniqueAddresses = Object.keys(groupedTx)
         var totalGasUsed = 0
+        var totalTransactions = 0
 
         uniqueAddresses.forEach((uniqueAddress) => {
           var temp = 0
 
           var arr = groupedTx[uniqueAddress]
+          totalTransactions += arr.length
           for (let index = 0; index < arr.length; index++) {
             temp += arr[index]['gasUsed'] * arr[index]['gasPrice']
           }
@@ -61,15 +67,17 @@ function App() {
           ),
         )
         setTotalGasUsed(totalGasUsed / Math.pow(10, 18))
+        setTotalNumberOfTransactions(totalTransactions)
 
         if (data != null) setLoading(false)
+        setShowLoadingGIF(false)
       })
   }
 
   const handleSubmit = (event) => {
-    if (address !== '') {
+    if (address !== '' && address?.length > 16) {
       console.log(`address = ${address}`)
-      if (address?.length > 16) fetchTransactions(address)
+      fetchTransactions(address)
     }
     event.preventDefault()
   }
@@ -78,7 +86,9 @@ function App() {
     <div className="App">
       <ul>
         <li>
-        <a href="#"><b> Where did my gas go?</b></a>
+          <a href="/">
+            <b> Where did my gas go?</b>
+          </a>
         </li>
       </ul>
 
@@ -87,7 +97,7 @@ function App() {
       <div className="center">
         <form onSubmit={handleSubmit}>
           <label>
-            Address:
+            Enter the Address:
             <input
               type="text"
               value={address}
@@ -102,13 +112,18 @@ function App() {
         <div>
           <br />
           <br />
-          <h2 className="center">Stats to appear here...</h2>
+          {showLoadingGIF ? (
+            <img className='loading-gif' src={loadingGIF} alt="loading..." />
+           
+          ) : (
+            <h2 className="center">Stats to appear here...</h2>
+          )}
         </div>
       ) : (
         <>
           <div className="center">
             <p>
-              Interacted with <h3>{txStatsList.length}</h3> unique addresses and
+              Interacted with <h3>{txStatsList.length}</h3> unique addresses in <h3>{totalNumberOfTransactions}</h3> transactions and
               spent <h3>{totalGasUsed} </h3>FTM in gas
             </p>
             <br />
@@ -120,7 +135,7 @@ function App() {
                 <tr>
                   <th>Address</th>
                   <th>No of times interacted</th>
-                  <th>Gas Used</th>
+                  <th>Cumulative Gas Used</th>
                 </tr>
               </thead>
               <tbody>
@@ -135,7 +150,7 @@ function App() {
               <tfoot>
                 <tr>
                   <td>TOTALS</td>
-                  <td>{data.length}</td>
+                  <td>{totalNumberOfTransactions}</td>
                   <td>{totalGasUsed} FTM</td>
                 </tr>
               </tfoot>
